@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const ListingSchema = mongoose.Schema({
+    host_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
     host: {
         type: String,
         required: true
@@ -44,11 +48,11 @@ const ListingSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    date_available: {
-        type: Array,
-        required: true,
-        default: [Date]
-    }
+    //date_available: {
+    //    type: Array,
+    //    required: true,
+    //    default: [Date]
+    //}
 }, {
     collection: 'listings'
 })

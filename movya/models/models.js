@@ -1,69 +1,13 @@
 const mongoose = require('mongoose');
 
-const ListingSchema = mongoose.Schema({
-    host: {
-        type: String,
-        required: true
-    },
-    title: {
-        type: String,
-        required: true,
-        min: 5,
-        max: 70
-    },
-    description: {
-        type: String,
-        required: true,
-        min: 10,
-        max: 2000
-    },
-    location: String,
-    rules: {
-        type: String,
-        required: true,
-        min: 10,
-        max: 2000
-    },
-    numOccupants: {
-        type: Number,
-        required: true
-    },
-    concierge: {
-        type: Boolean,
-        required: true
-    },
-    self_drive: {
-        type: Boolean,
-        required: true
-    },
-    host_photo: {
-        type: String,
-        required: true
-    },
-    car_photo: {
-        type: String,
-        required: true
-    },
-    date_available: {
-        type: Array,
-        required: true,
-        default: [Date]
-    }
-}, {
-    collection: 'listings'
-    }
-);
-
 const ReviewSchema = mongoose.Schema({
-    listingId: {
-        type: String,
-        required: true,
-        max: 1000
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
     },
-    userId: {
-        type: String,
-        required: true,
-        max: 1000
+    listing_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
     },
     name: {
         type: String,
