@@ -90,10 +90,6 @@ router.post('/createlisting', verify, upload.array('photos', 2), async (req, res
     res.json(listing);
 });
 
-// Edit listing
-router.post('/editlisting/:listing_id', verify, async(req, res) => {
-    return false;
-});
 
 // Edit review
 router.post('/editreview/:review_id', verify, async(req, res) => {
