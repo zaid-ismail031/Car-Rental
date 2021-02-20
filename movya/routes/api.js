@@ -1,6 +1,6 @@
 const express = require('express');
 const Listing = require('../models/listings');
-const Review = require('../models/models');
+const Review = require('../models/reviews');
 const User = require('../models/users');
 const Booking = require('../models/bookings');
 const verify = require('./verifyToken');
@@ -175,7 +175,7 @@ router.get('/reviews/:listing_id', verify, async(req, res) => {
     res.send(data);
 });
 
-// Testing
+// For testing purposes
 router.post('/test', async(req, res) => {
     var dates = req.body.dates[0].concat("T00:00:00.000Z");
     const date2 = String(dates);
@@ -200,14 +200,13 @@ router.post('/test', async(req, res) => {
     if (datesArray2.includes(unixTime)) return res.json({"message": "It does include"});
     if (test.dates.includes("random")) return res.json({"message": "It does not include"});
 
-    return;
-
     await test.save(function (err) {
         if (err) console.log(err);
     })
     res.send(test);
 });
 
+// Booking API (creates booking)
 router.post('/bookings/:listing_id', verify, async(req, res) => {
     const user = await User.findOne({_id: req.user});
     const listing = await Listing.findOne({_id: req.params.listing_id});
@@ -233,6 +232,11 @@ router.post('/bookings/:listing_id', verify, async(req, res) => {
     const unixTimeBooking = String(Date.parse(bookingDate));
     var offeredDates = listing.dates_available;
     if (unixTimeBooking == "NaN") return res.status(400).send("Date is not formatted correctly");
+
+    // Check if chosen date is at least 24 hours away
+    const currentDateUnixTime = Date.now();  
+    const oneDayInSeconds = 86400;
+    if (Number(unixTimeBooking) - currentDateUnixTime < oneDayInSeconds) return res.status(400).send("Chosen booking date must be made at least 24 hours prior");
 
     offeredDatesArray = [];
     for (var i = 0; i < offeredDates.length; i++) {

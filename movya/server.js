@@ -1,6 +1,9 @@
 // Use express.js
 const express = require('express');
+var exphbs  = require('express-handlebars');
 const server = express();
+server.engine('handlebars', exphbs());
+server.set('view engine', 'handlebars');
 
 // Set up body-parser (to handle json files)
 const bodyParser = require('body-parser');
@@ -31,12 +34,15 @@ mongoose.connect(
 })
 
 // import routes
-const api_routes = require('./api/api');
-const authRoute = require('./api/auth');
+const api_routes = require('./routes/api');
+const authRoute = require('./routes/auth_api');
+const templateRoute = require('./routes/renderTemplates');
 
 // middleware
+server.use(express.static('public'));
 server.use('/uploads', express.static('uploads'));
 server.use('/api/v1', api_routes);
 server.use('/api/v1/user', authRoute);
+server.use('/', templateRoute);
 
 
