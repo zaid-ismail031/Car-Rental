@@ -1,0 +1,5 @@
+HOW TO STORE DATES IN DATABASE
+
+{
+    "dates": ["2021-02-19", "2021-02-19", "2022-03-20"] etc.
+}

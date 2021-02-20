@@ -2,10 +2,13 @@ const express = require('express');
 const Listing = require('../models/listings');
 const Review = require('../models/models');
 const User = require('../models/users');
+const Booking = require('../models/bookings');
 const verify = require('./verifyToken');
 const router = express.Router();
 const multer = require('multer');
-const { findOne } = require('../models/users');
+const Test = require('../models/testDates');
+const { array } = require('joi');
+//const { findOne } = require('../models/users');
 
 // storage parameters
 const storage = multer.diskStorage({
@@ -76,7 +79,8 @@ router.post('/createlisting', verify, upload.array('photos', 2), async (req, res
         concierge: req.body.concierge,
         self_drive: req.body.self_drive,
         host_photo: req.files[0].path,
-        car_photo: req.files[1].path
+        car_photo: req.files[1].path,
+        dates_available: req.body.dates_available
     });
 
     console.log(listing);
@@ -125,8 +129,8 @@ router.post('/editlisting/:listing_id', verify, async(req, res) => {
     const user = await User.findOne({_id: req.user});
     const listing = await Listing.findOne({_id: req.params.listing_id});
 
-    const listingHostId = string(listing.host_id);
-    const userId = string(user._id);
+    const listingHostId = String(listing.host_id);
+    const userId = String(user._id);
 
     if (listingHostId != userId) return status(400).send("Not allowed");
 
@@ -139,7 +143,8 @@ router.post('/editlisting/:listing_id', verify, async(req, res) => {
         concierge: req.body.concierge,
         self_drive: req.body.self_drive,
         host_photo: req.files[0].path,
-        car_photo: req.files[1].path
+        car_photo: req.files[1].path,
+        dates_available: req.body.dates_available
     }
 
     let editedListing = await Listing.findOneAndUpdate({_id: req.params.listing_id}, update, {
@@ -168,6 +173,86 @@ router.get('/listings/:listing_id', verify, async(req, res) => {
 router.get('/reviews/:listing_id', verify, async(req, res) => {
     const data = await Review.find({listing_id: req.params.listing_id});
     res.send(data);
+});
+
+// Testing
+router.post('/test', async(req, res) => {
+    var dates = req.body.dates[0].concat("T00:00:00.000Z");
+    const date2 = String(dates);
+    const date3 = 'Fri Feb 19 2021 02:00:00 GMT+0200 (South Africa Standard Time)';
+    const unixTime = String(Date.parse(dates));
+    console.log("This is the ms", unixTime); 
+    //if (unixTime == "NaN") return res.status(400).send("Date is not formatted correctly");
+    //const datesArray = Array(req.body.dates);
+    //console.log(datesArray);
+    //console.log(dates);
+    test = new Test({
+        dates: req.body.dates
+    });
+
+    const datesArray1 = test.dates;
+    const datesArray2 = [String(Date.parse(datesArray1[0])), String(Date.parse(datesArray1[1]))];
+
+    console.log("This is the array1", datesArray1.length);
+    console.log("This is the datesArray2", datesArray2);
+    console.log("This is the string", dates);
+    console.log("This is date2", date2);
+    if (datesArray2.includes(unixTime)) return res.json({"message": "It does include"});
+    if (test.dates.includes("random")) return res.json({"message": "It does not include"});
+
+    return;
+
+    await test.save(function (err) {
+        if (err) console.log(err);
+    })
+    res.send(test);
+});
+
+router.post('/bookings/:listing_id', verify, async(req, res) => {
+    const user = await User.findOne({_id: req.user});
+    const listing = await Listing.findOne({_id: req.params.listing_id});
+
+    console.log(user);
+    // Security checks
+    const user_id = String(user._id); // ID of user making the booking
+    const host_id = String(listing.host_id); // ID of the hostuser of the listing that is being booked
+
+    // Ensure that users cannot book themselves
+    if (user_id == host_id) return res.status(400).send("You cannot book your own listing");
+
+    // Ensure that users chosen service matches the hosts offering (i.e. either self drive or concierge, or both)
+    const selfdrive = String(listing.self_drive);
+    const concierge = String(listing.concierge);
+    const chosenService = String(req.body.serviceType);
+
+    if (chosenService != selfdrive) return res.status(400).send("Host does not allow self-drive bookings");
+    if (chosenService == concierge) return res.status(400).send("Host does not allow concierge bookings");
+
+    // Check if booking date matches the host's offered dates
+    var bookingDate = req.body.date.concat("T00:00:00.000Z");
+    const unixTimeBooking = String(Date.parse(bookingDate));
+    var offeredDates = listing.dates_available;
+    if (unixTimeBooking == "NaN") return res.status(400).send("Date is not formatted correctly");
+
+    offeredDatesArray = [];
+    for (var i = 0; i < offeredDates.length; i++) {
+        offeredDatesArray.push(String(Date.parse(offeredDates[i])));
+    }
+
+    if (offeredDatesArray.includes(unixTimeBooking) == false) return res.status(400).send("Host does not offer the selected date");
+
+    booking = new Booking({
+        "user_id": user._id,
+        "listing_id": req.params.listing_id,
+        "listing_host": listing.host,
+        "date": req.body.date,
+        "serviceType": req.body.serviceType
+    });
+
+    await booking.save(function (err) {
+        if (err) console.log(err);
+    })
+    res.send(booking);
 });
 
 

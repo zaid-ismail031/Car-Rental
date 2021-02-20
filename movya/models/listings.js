@@ -48,12 +48,17 @@ const ListingSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    //date_available: {
-    //    type: Array,
-    //    required: true,
-    //    default: [Date]
-    //}
-}, {
+    dates_available: {
+        type: [Date],
+        required: true
+    }
+},
+{
+    timestamps: {
+        createdAt: 'created_at'
+    }
+}, 
+{
     collection: 'listings'
 })
 
