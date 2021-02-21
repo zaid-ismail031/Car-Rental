@@ -13,12 +13,12 @@ router.post('/register', async (req, res) => {
     const { error } = registerValidation(req.body);
     console.log("This is the error: ", error);
     if (error) {
-        return res.status(400).send(error);
+        return res.status(400).json({error});
     }
 
     // Check if user already in database
     const emailExist = await User.findOne({email : req.body.email});
-    if(emailExist) return res.status(400).send('Email already exists');
+    if(emailExist) return res.status(400).json({error: "Email already exists"});
 
     // Hash password
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -38,7 +38,7 @@ router.post('/register', async (req, res) => {
             return;
         }
 
-        res.json({user: user._id});
+        res.json({success: "Registered"});
     })
 });
 
@@ -47,21 +47,25 @@ router.post('/register', async (req, res) => {
 // LOG IN
 router.post('/login', async (req, res) => {
     const {error} = loginValidation(req.body);
+    console.log(req.body);
     if (error) {
-        return res.status(400).send(error);
+        return res.status(400).json({error: 'Email or password is incorrect'});
     }
 
     // Validate email
     const user = await User.findOne({email : req.body.email});
-    if(!user) return res.status(400).send('Email or password is incorrect');
+    if(!user) return res.status(400).json({error: 'Email or password is incorrect'});
 
     // Validate password
     const validPass = await bcrypt.compare(req.body.password, user.password);
-    if(!validPass) return res.status(400).send('Email or password is incorrect');
+    if(!validPass) return res.status(400).json({error: 'Email or password is incorrect'});
 
     // Create token and assign
     const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET);
-    res.header('auth-token', token).send(token);
+    res
+        .header('Access-Control-Expose-Headers', 'auth-token')
+        .header('auth-token', token)
+        .json({success: token});
     //res.json({"Message": "Logged in"});
 })
 
