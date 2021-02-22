@@ -11,3 +11,4 @@ Set expiration time on JWT token
 Implement validation functions (in validation.js) for routes in api.js
 Check for cross-site scripting
 Make sure user id's are not visible to the client
+Prevent images from saving without database entry being created.

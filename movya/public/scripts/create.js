@@ -52,7 +52,7 @@ function create(e) {
 
         if (error) document.getElementById('error').innerHTML = error;
         if (success) {
-            window.location.href = "/";
+            window.location.href = "/mylistings";
         };
     })
 

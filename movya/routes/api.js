@@ -65,11 +65,12 @@ router.post('/createreview', verify, async (req, res) => {
 
 
 // API for creating listings
-router.post('/createlisting', verify, async (req, res) => {
+router.post('/createlisting', upload.array('photos', 2), verify, async (req, res) => {
     //console.log(req.files);
     //console.log(req.body.title);
     //console.log(req.body.description);
     //console.log(req.body.location);
+    console.log(req.files);
     const user = await User.findOne({_id: req.user});
     try {
     const listing = new Listing({
@@ -83,22 +84,21 @@ router.post('/createlisting', verify, async (req, res) => {
         numOccupants: req.body.numOccupants,
         concierge: req.body.concierge,
         self_drive: req.body.self_drive,
-        host_photo: req.files[0].path,
-        car_photo: req.files[1].path,
+        host_photo: req.files[0].filename,
+        car_photo: req.files[1].filename,
         dates_available: req.body.dates_available
     });
-    } catch (err) {
-        return res.status(400).json({error: "Please fill in all fields appropriately"});
-    }
-
-    console.log(listing);
     await listing.save(function (err) {
         if (err) {
             return res.status(400).json({error: "Please fill in all fields appropriately"});
         }
     });
 
-    upload.array('photos', 2) 
+    } catch (err) {
+        return res.status(400).json({error: "Please fill in all fields appropriately"});
+    }
+    
+    //upload.array('photos', 2) 
     return res.status(400).json({success: "Listing created"});
 });
 
@@ -140,6 +140,8 @@ router.post('/editlisting/:listing_id', verify, async(req, res) => {
     const listingHostId = String(listing.host_id);
     const userId = String(user._id);
 
+    console.log(req.files[0].filename);
+
     if (listingHostId != userId) return status(400).send("Not allowed");
 
     update = {
@@ -151,8 +153,8 @@ router.post('/editlisting/:listing_id', verify, async(req, res) => {
         numOccupants: req.body.numOccupants,
         concierge: req.body.concierge,
         self_drive: req.body.self_drive,
-        host_photo: req.files[0].path,
-        car_photo: req.files[1].path,
+        host_photo: req.files[0].filename,
+        car_photo: req.files[1].filename,
         dates_available: req.body.dates_available
     }
 

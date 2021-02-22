@@ -1,0 +1,26 @@
+
+<div class="true-body">
+{{#each listing}}
+
+    <h3>{{title}}</h3>
+    <h5>
+        <img src="/uploads/{{host_photo}}" id="host-photo">
+        Listed by: {{host}}
+        
+    </h5> 
+
+    <img src="/uploads/{{car_photo}}" alt="">
+{{/each}}
+
+    <h3>REVIEWS:</h3>
+    <form action="/api/v1/createreview">
+        <div class="form-group">
+            <input autofocus class="form-control" type="text" name="title" id="title" placeholder="Title">
+        </div>
+
+        <div class="input-field col s12">
+          <textarea id="body" name="body" class="materialize-textarea"></textarea>
+          <label for="body">Write your review here...</label>
+        </div>
+    </form>
+</div>

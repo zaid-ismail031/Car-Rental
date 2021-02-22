@@ -23,8 +23,8 @@ router.get('/', (req, res) => {
 });
 
 // @Private
-router.get('/login', verify, (req, res) => {
-    res.render('login', {user: true});
+router.get('/login', (req, res) => {
+    res.render('login', {user: false});
 });
 
 // @Private
@@ -38,13 +38,26 @@ router.get('/create', verify, (req, res) => {
 });
 
 router.get('/mylistings', verify, async (req, res) => {
-    const mylistings = await Listing.find({host_id: req.user})
-    console.log(mylistings);
-    const jsonListings = JSON.stringify(mylistings);
+    const mylistings = await Listing.find({host_id: req.user}).lean();
+    
     res.render(
         'mylistings', {
-            user: true, mylistings:jsonListings
-    })
-})
+            user: true,
+            mylistings: mylistings,
+    });
+});
 
+
+router.get('/listings/:listing_id', verify, async (req, res) => {
+    const listing = await Listing.find({_id: req.params.listing_id}).lean();
+
+    console.log(listing);
+
+    res.render(
+        'listing', {
+            user: true,
+            listing: listing,
+        }
+    )
+});
 module.exports = router;
