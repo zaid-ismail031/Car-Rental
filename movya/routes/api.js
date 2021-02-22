@@ -65,12 +65,13 @@ router.post('/createreview', verify, async (req, res) => {
 
 
 // API for creating listings
-router.post('/createlisting', verify, upload.array('photos', 2), async (req, res) => {
-    console.log(req.files);
-    console.log(req.body.title);
-    console.log(req.body.description);
-    console.log(req.body.location);
+router.post('/createlisting', verify, async (req, res) => {
+    //console.log(req.files);
+    //console.log(req.body.title);
+    //console.log(req.body.description);
+    //console.log(req.body.location);
     const user = await User.findOne({_id: req.user});
+    try {
     const listing = new Listing({
         host_id: user._id,
         host: user.name,
@@ -86,16 +87,19 @@ router.post('/createlisting', verify, upload.array('photos', 2), async (req, res
         car_photo: req.files[1].path,
         dates_available: req.body.dates_available
     });
+    } catch (err) {
+        return res.status(400).json({error: "Please fill in all fields appropriately"});
+    }
 
     console.log(listing);
     await listing.save(function (err) {
         if (err) {
-            console.log(err);
-            return;
+            return res.status(400).json({error: "Please fill in all fields appropriately"});
         }
     });
 
-    res.json(listing);
+    upload.array('photos', 2) 
+    return res.status(400).json({success: "Listing created"});
 });
 
 

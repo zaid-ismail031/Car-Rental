@@ -45,4 +45,15 @@ function create(e) {
         body: formData
     })
 
+    .then(response => response.json())
+    .then(result => {
+        const success = result['success'];
+        const error = result['error'];
+
+        if (error) document.getElementById('error').innerHTML = error;
+        if (success) {
+            window.location.href = "/";
+        };
+    })
+
 }

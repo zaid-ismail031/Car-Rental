@@ -37,9 +37,14 @@ router.get('/create', verify, (req, res) => {
     res.render('create', {user: true});
 });
 
-router.get('mylistings', verify, (req, res) => {
-    const mylistings = Listing.find({host_id: req.user})
-    res.render('mylistings', {user: true, mylistings:mylistings})
+router.get('/mylistings', verify, async (req, res) => {
+    const mylistings = await Listing.find({host_id: req.user})
+    console.log(mylistings);
+    const jsonListings = JSON.stringify(mylistings);
+    res.render(
+        'mylistings', {
+            user: true, mylistings:jsonListings
+    })
 })
 
 module.exports = router;
