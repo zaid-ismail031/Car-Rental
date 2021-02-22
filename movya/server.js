@@ -1,5 +1,6 @@
 // Use express.js
 const express = require('express');
+const cookieParser = require('cookie-parser');
 var exphbs  = require('express-handlebars');
 const server = express();
 server.engine('handlebars', exphbs());
@@ -8,11 +9,14 @@ server.set('view engine', 'handlebars');
 // Set up body-parser (to handle json files)
 const bodyParser = require('body-parser');
 server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({extended:true}));
 
 // set-up env 
-//require('dotenv/config');
 const dotenv = require('dotenv');
 dotenv.config();
+
+// set up cookie parser
+server.use(cookieParser());
 
 // set-up port
 const PORT = process.env.PORT || 5000;

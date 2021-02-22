@@ -1,0 +1,102 @@
+<div class="true-body2">
+    <div id="error">
+
+    </div>
+    <h3 id="create-listing">CREATE LISTING</h3>
+<form action="/api/v1/createlisting" enctype='multipart/form-data'>
+    <div class="form-group">
+        <input autofocus class="form-control" type="text" name="title" id="title" placeholder="Title (eg. Mercedes-Benz C180 2010 Black)">
+    </div>
+    <select id="vehicleType" className="browser-default">
+      <option value="" disabled selected>Choose Vehicle Type</option>
+      <option value="Sedan">Sedan</option>
+      <option value="SUV">SUV</option>
+      <option value="Station Wagon">Station Wagon</option>
+      <option value="Coupe">Coupe</option>
+      <option value="Convertible">Convertible</option>
+      <option value="Hatchback">Hatchback</option>
+      <option value="Sports Car">Sports Car</option>
+      <option value="Super Car">Super Car</option>
+      <option value="Vintage">Vintage</option>
+      <option value="Minivan">Minivan</option>
+      <option value="Bus">Bus</option>
+      <option value="Truck">Truck</option>
+      <option value="Van">Van</option>
+    </select>
+
+    
+        <div class="input-field col s12">
+          <textarea id="description" name="description" class="materialize-textarea"></textarea>
+          <label for="description">Description</label>
+        </div>
+    
+
+    
+        <div class="input-field col s12">
+          <textarea id="rules" class="materialize-textarea"></textarea>
+          <label for="rules">Rules</label>
+        </div>
+    
+
+    <div class="form-group">
+        <input autofocus class="form-control" type="text" name="location" id="location" placeholder="Location">
+    </div>
+
+    <div class="form-group">
+        <input autofocus class="form-control" type="number" name="numOccupants" id="numOccupants" placeholder="Number of Occupants">
+    </div>
+
+    <select id="concierge">
+      <option value="" class="placeholder" disabled selected>Do you offer a concierge service?</option>
+      <option value="true">True</option>
+      <option value="false">False</option>
+    </select>
+
+    <select id="self-drive">
+      <option value="" disabled selected>Do you allow clients to self-drive your vehicle?</option>
+      <option value="true">True</option>
+      <option value="false">False</option>
+    </select>
+
+    <div class="file-field input-field">
+      <div class="btn">
+        <span>Host Photo</span>
+        <input type="file" id="host_photo" name="host_photo">
+      </div>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text">
+      </div>
+    </div>
+
+
+    <div class="file-field input-field">
+      <div class="btn">
+        <span>Car Photo</span>
+        <input type="file" id="car_photo" name="car_photo">
+      </div>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text">
+      </div>
+    </div>
+    <h6>Pick your available dates</h6>
+    <div class="input-field">
+     <input type="text" class="datepicker" id="date1" placeholder="Date 1 (required)">
+    </div>
+    <div class="input-field">
+     <input type="text" class="datepicker" id="date2" placeholder="Date 2 (optional)">
+    </div>
+    <div class="input-field">
+     <input type="text" class="datepicker" placeholder="Date 3 (optional)">
+    </div>
+    <div class="input-field">
+     <input type="text" class="datepicker" placeholder="Date 4 (optional)">
+    </div>
+    <div class="input-field">
+     <input type="text" class="datepicker" placeholder="Date 5 (optional)">
+    </div>
+
+    <button id="button" type="button" class="btn waves-effect waves-light" style="background-color: #FF6347">CREATE</button>
+</form>
+</div>
+
+<script src="/scripts/create.js"></script>

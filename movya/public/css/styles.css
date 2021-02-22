@@ -2,7 +2,23 @@
     margin: 15px;
 }
 
+.true-body2{
+    margin: 50px;
+}
+
 #username {
     font-size: medium;
     padding-right: 10px;
+}
+
+.placeholder {
+    color: lightgrey;
+}
+
+#error {
+    margin: 15px;
+}
+
+#create-listing {
+    text-align: center;
 }

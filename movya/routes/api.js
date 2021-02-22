@@ -67,11 +67,15 @@ router.post('/createreview', verify, async (req, res) => {
 // API for creating listings
 router.post('/createlisting', verify, upload.array('photos', 2), async (req, res) => {
     console.log(req.files);
+    console.log(req.body.title);
+    console.log(req.body.description);
+    console.log(req.body.location);
     const user = await User.findOne({_id: req.user});
     const listing = new Listing({
         host_id: user._id,
         host: user.name,
         title: req.body.title,
+        vehicleType: req.body.vehicleType,
         description: req.body.description,
         location: req.body.location,
         rules: req.body.rules,
@@ -136,6 +140,7 @@ router.post('/editlisting/:listing_id', verify, async(req, res) => {
 
     update = {
         title: req.body.title,
+        vehicleType: req.body.vehicleType,
         description: req.body.description,
         location: req.body.location,
         rules: req.body.rules,
@@ -258,6 +263,5 @@ router.post('/bookings/:listing_id', verify, async(req, res) => {
     })
     res.send(booking);
 });
-
 
 module.exports = router;

@@ -1,5 +1,12 @@
 HOW TO STORE DATES IN DATABASE
-
+POST REQUEST
 {
-    "dates": ["2021-02-19", "2021-02-19", "2022-03-20"] etc.
+    "dates": ["2021-02-19", "2021-02-19", "2022-03-20"] 
 }
+
+NOTES TO SELF
+Change filename format to prevent overwrites
+Prevent hashed password from being sent to user after successful registration
+Set expiration time on JWT token
+Implement validation functions (in validation.js) for routes in api.js
+Check for cross-site scripting

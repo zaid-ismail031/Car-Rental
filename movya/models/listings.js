@@ -15,6 +15,11 @@ const ListingSchema = mongoose.Schema({
         min: 5,
         max: 70
     },
+    vehicleType: {
+        type: String,
+        enum: ['Sedan', 'SUV', 'Station Wagon', 'Coupe', 'Convertible', 'Hatchback', 'Sports Car', 'Super Car', 'Vintage', 'Minivan', 'Bus', 'Truck', 'Van'],
+        required: true
+    },
     description: {
         type: String,
         required: true,
