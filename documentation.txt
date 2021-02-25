@@ -5,10 +5,10 @@ POST REQUEST
 }
 
 NOTES TO SELF
-Change filename format to prevent overwrites
-Prevent hashed password from being sent to user after successful registration
-Set expiration time on JWT token
-Implement validation functions (in validation.js) for routes in api.js
+Change filename format to prevent overwrites (DONE)
+Prevent hashed password from being sent to user after successful registration 
+Set expiration time on JWT token (TBC after development)
+Implement validation functions (in validation.js) for routes in api.js (Probably unnecessary, needs pen test)
 Check for cross-site scripting
-Make sure user id's are not visible to the client
-Prevent images from saving without database entry being created.
+Make sure user id's are not visible to the client (Probably fixed, needs testing)
+Prevent images from saving without database entry being created. (DONE)

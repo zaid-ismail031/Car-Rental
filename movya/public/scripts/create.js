@@ -50,9 +50,14 @@ function create(e) {
         const success = result['success'];
         const error = result['error'];
 
-        if (error) document.getElementById('error').innerHTML = error;
+        console.log("Success: ", success);
+        console.log("Error: ", error);
+        
+
+        if (!success) document.getElementById('error').innerHTML = error;
         if (success) {
-            window.location.href = "/mylistings";
+            //window.location.href = "/mylistings";
+            console.log(success);
         };
     })
 

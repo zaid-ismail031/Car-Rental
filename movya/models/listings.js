@@ -47,11 +47,11 @@ const ListingSchema = mongoose.Schema({
     },
     host_photo: {
         type: String,
-        required: true
+        required: false
     },
     car_photo: {
         type: String,
-        required: true
+        required: false
     },
     dates_available: {
         type: [Date],

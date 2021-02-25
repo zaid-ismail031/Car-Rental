@@ -7,6 +7,7 @@ const verify = require('./verifyToken');
 const router = express.Router();
 const multer = require('multer');
 const Test = require('../models/testDates');
+const fs = require('fs');
 const { array } = require('joi');
 //const { findOne } = require('../models/users');
 
@@ -16,7 +17,7 @@ const storage = multer.diskStorage({
         cb(null, './uploads/');
     },
     filename: function(req, file, cb) {
-        cb(null, file.originalname);
+        cb(null, String(Number(Date.now())).concat(file.originalname));
     }
 });
 
@@ -73,33 +74,54 @@ router.post('/createlisting', upload.array('photos', 2), verify, async (req, res
     console.log(req.files);
     const user = await User.findOne({_id: req.user});
     try {
-    const listing = new Listing({
-        host_id: user._id,
-        host: user.name,
-        title: req.body.title,
-        vehicleType: req.body.vehicleType,
-        description: req.body.description,
-        location: req.body.location,
-        rules: req.body.rules,
-        numOccupants: req.body.numOccupants,
-        concierge: req.body.concierge,
-        self_drive: req.body.self_drive,
-        host_photo: req.files[0].filename,
-        car_photo: req.files[1].filename,
-        dates_available: req.body.dates_available
-    });
-    await listing.save(function (err) {
-        if (err) {
-            return res.status(400).json({error: "Please fill in all fields appropriately"});
-        }
-    });
+        const listing = new Listing({
+            host_id: user._id,
+            host: user.name,
+            title: req.body.title,
+            vehicleType: req.body.vehicleType,
+            description: req.body.description,
+            location: req.body.location,
+            rules: req.body.rules,
+            numOccupants: req.body.numOccupants,
+            concierge: req.body.concierge,
+            self_drive: req.body.self_drive,
+            host_photo: req.files[0].filename,
+            car_photo: req.files[1].filename,
+            dates_available: req.body.dates_available
+        });
+        await listing.save(function (err) {
+            if (err) {
+                const path1 = './uploads/'.concat(req.files[0].filename);
+                const path2 = './uploads/'.concat(req.files[1].filename);
+                
+                fs.unlink(path1, function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                })
+
+                fs.unlink(path2, function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                })
+                
+                console.log("Error occured here at await listing.save");
+                return res.status(400).json({error: "Please fill in all fields appropriately"});
+            }
+            else {
+                return res.status(200).json({success: "Listing created"});
+            }
+        });
 
     } catch (err) {
-        return res.status(400).json({error: "Please fill in all fields appropriately"});
+        console.log("Error occured here at catch");
+        return res.status(400).json({error: "Please fill in all fields appropriately"});  
     }
     
     //upload.array('photos', 2) 
-    return res.status(400).json({success: "Listing created"});
+    console.log("Random shit");
+    
 });
 
 
