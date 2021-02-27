@@ -154,6 +154,7 @@ router.post('/editreview/:review_id', verify, async(req, res) => {
 
 });
 
+
 // Edit listing
 router.post('/editlisting/:listing_id', verify, async(req, res) => {
     const user = await User.findOne({_id: req.user});
@@ -165,31 +166,70 @@ router.post('/editlisting/:listing_id', verify, async(req, res) => {
     console.log(req.files[0].filename);
 
     if (listingHostId != userId) return status(400).send("Not allowed");
+    try {
+        update = {
+            title: req.body.title,
+            vehicleType: req.body.vehicleType,
+            description: req.body.description,
+            location: req.body.location,
+            rules: req.body.rules,
+            numOccupants: req.body.numOccupants,
+            concierge: req.body.concierge,
+            self_drive: req.body.self_drive,
+            host_photo: req.files[0].filename,
+            car_photo: req.files[1].filename,
+            dates_available: req.body.dates_available
+        }
 
-    update = {
-        title: req.body.title,
-        vehicleType: req.body.vehicleType,
-        description: req.body.description,
-        location: req.body.location,
-        rules: req.body.rules,
-        numOccupants: req.body.numOccupants,
-        concierge: req.body.concierge,
-        self_drive: req.body.self_drive,
-        host_photo: req.files[0].filename,
-        car_photo: req.files[1].filename,
-        dates_available: req.body.dates_available
+        let editedListing = await Listing.findOneAndUpdate({_id: req.params.listing_id}, update, {
+            new: true
+        })
+
+        await editedListing.save(function(err) {
+            if (err) {
+                const path1 = './uploads/'.concat(req.files[0].filename);
+                const path2 = './uploads/'.concat(req.files[1].filename);
+                
+                fs.unlink(path1, function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                })
+
+                fs.unlink(path2, function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                })
+                
+                console.log("Error occured here at await listing.save");
+                return res.status(400).json({error: "Please fill in all fields appropriately"});
+            }
+            else {
+                const path1 = './uploads/'.concat(String(listing.host_photo));
+                const path2 = './uploads/'.concat(String(listing.car_photo));
+
+                fs.unlink(path1, function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                })
+
+                fs.unlink(path2, function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                })
+                
+                
+                console.log("Error occured here at await listing.save success branch");
+                return res.status(200).json({success: "Listing created"});
+            }
+        })
+    } catch (err) {
+        console.log("Error occured here at catch");
+        return res.status(400).json({error: "Please fill in all fields appropriately"});
     }
-
-    let editedListing = await Listing.findOneAndUpdate({_id: req.params.listing_id}, update, {
-        new: true
-    })
-
-    await editedListing.save(function(err) {
-        console.log(err);
-        return
-    })
-
-    res.json(editedListing);
 
 });
 
@@ -291,5 +331,47 @@ router.post('/bookings/:listing_id', verify, async(req, res) => {
     })
     res.send(booking);
 });
+
+
+// Validate booking (before payment)
+router.post('/bookingvalidate/:listing_id', verify, async(req, res) => {
+    const user = await User.findOne({_id: req.user});
+    const listing = await Listing.findOne({_id: req.params.listing_id});
+
+    console.log(user);
+    // Security checks
+    const user_id = String(user._id); // ID of user making the booking
+    const host_id = String(listing.host_id); // ID of the hostuser of the listing that is being booked
+
+    // Ensure that users cannot book themselves
+    if (user_id == host_id) return res.status(400).json({error: "You cannot book your own listing"});
+
+    // Ensure that users chosen service matches the hosts offering (i.e. either self drive or concierge, or both)
+    const selfdrive = String(listing.self_drive);
+    const concierge = String(listing.concierge);
+    const chosenService = String(req.body.serviceType);
+
+    if (chosenService != selfdrive) return res.status(400).json({error: "Host does not allow self-drive bookings"});
+    if (chosenService == concierge) return res.status(400).json({error: "Host does not allow concierge bookings"});
+
+    // Check if booking date matches the host's offered dates
+    var bookingDate = req.body.date.concat("T00:00:00.000Z");
+    const unixTimeBooking = String(Date.parse(bookingDate));
+    var offeredDates = listing.dates_available;
+    if (unixTimeBooking == "NaN") return res.status(400).json({error: "Date is not formatted correctly"});
+
+    // Check if chosen date is at least 24 hours away
+    const currentDateUnixTime = Date.now();  
+    const oneDayInSeconds = 86400;
+    if (Number(unixTimeBooking) - currentDateUnixTime < oneDayInSeconds) return res.status(400).json({error: "Chosen booking date must be made at least 24 hours prior"});
+
+    offeredDatesArray = [];
+    for (var i = 0; i < offeredDates.length; i++) {
+        offeredDatesArray.push(String(Date.parse(offeredDates[i])));
+    }
+
+    if (offeredDatesArray.includes(unixTimeBooking) == false) return res.status(400).json({error: "Host does not offer the selected date"}); 
+    else return res.status(200).json({success: "Booking is valid"});
+})
 
 module.exports = router;

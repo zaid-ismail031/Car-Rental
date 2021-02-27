@@ -2,13 +2,74 @@ HOW TO STORE DATES IN DATABASE
 POST REQUEST
 {
     "dates": ["2021-02-19", "2021-02-19", "2022-03-20"] 
+}"
+
+CREATE LISTING OR EDIT LISTING:
+POST REQUEST TO /api/v1/createlisting (must be logged in)
+OR
+POST REQUEST TO /api/v1/editlisting/{insert listing id} (must be logged in)
+HERE IS HOW JSON SHOULD BE STRUCTURED
+{
+    "title" : "random title",
+    "vehicleType" : "random vehicle type (must be from vehicle type list shown below)",
+    "descripton": "random description",
+    "location": "random location (or Google Maps co-ordinates if you choose to implement it)",
+    "rules": "random rules",
+    "numOccupants": "random integer",
+    "concierge: "true or false",
+    "self_drive": "true or false",
+    "photos": "insert random selfie of host",
+    "photos": "this is car photo",
+
+    // ARRAY OF DATES MUST BE SET UP LIKE THIS
+    "dates_available": "date 1 (must be yyyy-mm-dd format)",
+    "dates_available": "date 2 (must be yyyy-mm-dd format)",
+    .
+    .
+    .
+    "dates_available: "date n (must be yyyy-mm-dd format)"
 }
 
+CREATE OR EDIT REVIEW
+POST REQUEST TO /api/v1/createreview (must be logged in)
+OR
+POST REQUEST TO /api/v1/editreview/{insert listing id} (must be logged in)
+HERE IS JSON
+{
+    "title": "random title",
+    "body": "random body"
+}
+
+VALIDATE OR CREATE BOOKING
+POST REQUEST TO /api/v1/validatebooking/{insert listing id}
+OR
+POST REQUEST TO /api/v1/bookings/{insert listing id}
+
+JSON {
+    "date": "user's chosen booking date (there are checks in both api endpoints to ensure that it is valid date)",
+    "serviceType": "true for self-drive, false for concierge"
+}
+
+LIST OF VEHICLE TYPES
+['Sedan', 
+'SUV', 
+'Station Wagon', 
+'Coupe', 
+'Convertible', 
+'Hatchback', 
+'Sports Car', 
+'Super Car', 
+'Vintage', 
+'Minivan', 
+'Bus', 
+'Truck', 
+'Van'],
+
 NOTES TO SELF
-Change filename format to prevent overwrites (DONE)
-Prevent hashed password from being sent to user after successful registration 
+*Change filename format to prevent overwrites (DONE)
+*Prevent hashed password from being sent to user after successful registration 
 Set expiration time on JWT token (TBC after development)
-Implement validation functions (in validation.js) for routes in api.js (Probably unnecessary, needs pen test)
+*Implement validation functions (in validation.js) for routes in api.js (Probably unnecessary, needs pen test)
 Check for cross-site scripting
-Make sure user id's are not visible to the client (Probably fixed, needs testing)
-Prevent images from saving without database entry being created. (DONE)
+*Make sure user id's are not visible to the client (Probably fixed, needs testing)
+*Prevent images from saving without database entry being created. (DONE)
