@@ -306,17 +306,27 @@ router.post('/bookings/:listing_id', verify, async(req, res) => {
     var offeredDates = listing.dates_available;
     if (unixTimeBooking == "NaN") return res.status(400).send("Date is not formatted correctly");
 
-    // Check if chosen date is at least 24 hours away
-    const currentDateUnixTime = Date.now();  
-    const oneDayInSeconds = 86400;
-    if (Number(unixTimeBooking) - currentDateUnixTime < oneDayInSeconds) return res.status(400).send("Chosen booking date must be made at least 24 hours prior");
-
     offeredDatesArray = [];
     for (var i = 0; i < offeredDates.length; i++) {
         offeredDatesArray.push(String(Date.parse(offeredDates[i])));
     }
 
     if (offeredDatesArray.includes(unixTimeBooking) == false) return res.status(400).send("Host does not offer the selected date");
+
+    // Check if chosen date is at least 24 hours away
+    const currentDateUnixTime = Date.now();  
+    const oneDayInSeconds = 86400;
+    if (Number(unixTimeBooking) - currentDateUnixTime < oneDayInSeconds) return res.status(400).send("Chosen booking date must be made at least 24 hours prior");
+
+    // Check if date is not already booked
+    const bookedDates = listing.booked_dates;
+    if (bookedDates != null) {
+        bookedDatesArray = [];
+        for (var i = 0; i < bookedDates.length; i++) {
+            bookedDatesArray.push(String(Date.parse(booked_dates[i])));
+        }
+        if (bookedDatesArray.includes(unixTimeBooking) == true) return res.status(400).send("Host does not offer the selected date");
+    }
 
     booking = new Booking({
         "user_id": user._id,
@@ -329,7 +339,29 @@ router.post('/bookings/:listing_id', verify, async(req, res) => {
     await booking.save(function (err) {
         if (err) console.log(err);
     })
-    res.send(booking);
+
+    if (listing.booked_dates === null) {
+        const update = {
+            booked_dates: req.body.date
+        }
+    } else {
+        const update = {
+            booked_dates: [listing.booked_dates, req.body.date]
+        }
+    }
+
+    let editedListing = await Listing.findOneAndUpdate({_id: req.params.listing_id}, update, {
+        new: true
+    })
+
+    await editedListing.save (function (err) {
+        if (err) {
+            return res.status(400).json({error: "Oops! Something went wrong"});
+        }
+
+        else return res.status(200).json({success: "booking created successfully"});
+    })
+
 });
 
 
@@ -360,18 +392,28 @@ router.post('/bookingvalidate/:listing_id', verify, async(req, res) => {
     var offeredDates = listing.dates_available;
     if (unixTimeBooking == "NaN") return res.status(400).json({error: "Date is not formatted correctly"});
 
-    // Check if chosen date is at least 24 hours away
-    const currentDateUnixTime = Date.now();  
-    const oneDayInSeconds = 86400;
-    if (Number(unixTimeBooking) - currentDateUnixTime < oneDayInSeconds) return res.status(400).json({error: "Chosen booking date must be made at least 24 hours prior"});
-
     offeredDatesArray = [];
     for (var i = 0; i < offeredDates.length; i++) {
         offeredDatesArray.push(String(Date.parse(offeredDates[i])));
     }
 
     if (offeredDatesArray.includes(unixTimeBooking) == false) return res.status(400).json({error: "Host does not offer the selected date"}); 
-    else return res.status(200).json({success: "Booking is valid"});
+
+    // Check if chosen date is at least 24 hours away
+    const currentDateUnixTime = Date.now();  
+    const oneDayInSeconds = 86400;
+    if (Number(unixTimeBooking) - currentDateUnixTime < oneDayInSeconds) return res.status(400).json({error: "Chosen booking date must be made at least 24 hours prior"});
+
+    // Check if date is not already booked
+    const bookedDates = listing.booked_dates;
+    if (bookedDates != null) {
+        bookedDatesArray = [];
+        for (var i = 0; i < bookedDates.length; i++) {
+            bookedDatesArray.push(String(Date.parse(booked_dates[i])));
+        }
+        if (bookedDatesArray.includes(unixTimeBooking) == true) return res.status(400).send("Host does not offer the selected date");
+        else return res.status(200).json({success: "Booking is valid"});
+    } else return res.status(200).json({success: "Booking is valid"});
 })
 
 module.exports = router;

@@ -56,6 +56,10 @@ const ListingSchema = mongoose.Schema({
     dates_available: {
         type: [Date],
         required: true
+    },
+    booked_dates: {
+        type: [Date],
+        required: false
     }
 },
 {
