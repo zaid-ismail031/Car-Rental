@@ -65,6 +65,26 @@ LIST OF VEHICLE TYPES
 'Truck', 
 'Van'],
 
+// REGISTERING
+
+POST 178.62.104.150:5000/api/v1/user/register
+
+{
+    "name": "inser full name",
+    "email": "insert email",
+    "password": "insert password"
+}
+
+
+// LOGIN 
+
+POST 178.62.104.150:5000/api/v1/user/login
+
+{
+    "email": "email",
+    "password", "password"
+}
+
 NOTES TO SELF
 *Change filename format to prevent overwrites (DONE)
 *Prevent hashed password from being sent to user after successful registration 

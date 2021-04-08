@@ -29,7 +29,7 @@ router.get('/login', (req, res) => {
 
 // @Private
 router.get('/register', (req, res) => {
-    res.render('register', {user: true});
+    res.render('register', {user: false});
 });
 
 
