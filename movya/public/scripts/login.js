@@ -24,7 +24,7 @@ function login() {
         const success = result['success'];
         const error = result['error'];
         
-        if (!success) document.getElementById('error').innerHTML = "Please fill in all the fields";
+        if (error) document.getElementById('error').innerHTML = error;
         if (success) {
             document.cookie = `auth-token=${success}`;
             window.location.href = "/";
