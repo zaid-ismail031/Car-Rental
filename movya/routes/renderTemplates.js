@@ -28,7 +28,7 @@ router.get('/login', (req, res) => {
 });
 
 // @Private
-router.get('/register', verify, (req, res) => {
+router.get('/register', (req, res) => {
     res.render('register', {user: true});
 });
 
